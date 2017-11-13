@@ -8,7 +8,7 @@ from .message import Message
 
 # Keep 10 minutes of messages
 RECENT_TIME_WINDOW = 10 * 60
-# Keep many thounsands of message counts for good measure
+# Keep many thousands of message counts for good measure
 COUNTS = 100000
 
 
@@ -61,6 +61,8 @@ class ChatOracle:
         return self._counts
 
     def feed_messages(self, messages: Iterable[Message]):
+        if not messages:
+            return
         self._update_recent(messages)
         self._add_counts()
 
@@ -72,7 +74,7 @@ class ChatOracle:
         t = messages[-1].time - RECENT_TIME_WINDOW
 
         def time_check(m: Message):
-            return m.time < t
+            return m.time >= t
 
         combined = list(filter(time_check, chain(recents, messages)))
 

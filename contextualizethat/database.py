@@ -1,3 +1,4 @@
+import codecs
 import pickle
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -27,10 +28,13 @@ class Database(ABC):
 
 
 class TinyDatabase(Database):
-    DATABASE_FOLDER = util.get_ready_made_dir(Path.home() / '.config' / NAME / 'db', config.database_folder)
+    @staticmethod
+    def get_db_folder() -> Path:
+        return util.get_ready_made_dir(Path.home() / '.config' / NAME / 'db', config.database_folder)
 
     def __init__(self, name: str):
-        self.db: Table = TinyDB(path=TinyDatabase.DATABASE_FOLDER / name + ".json").table()
+        self._db = TinyDB(path=TinyDatabase.get_db_folder() / (name + ".json"))
+        self.db: Table = self._db.table()
 
     def __getitem__(self, key):
         bin_data = self.db.get(where('key') == key)['value']
@@ -45,13 +49,21 @@ class TinyDatabase(Database):
             return
         self[key] = default_value
 
+    def close(self):
+        self._db.close()
+        self.db = None
+
     @staticmethod
-    def _unpack(value):
-        return pickle.loads(value)
+    def _unpack(b64_data: str):
+        bin_data = codecs.decode(b64_data.encode('ascii'), 'base64')
+        value = pickle.loads(bin_data)
+        return value
 
     @staticmethod
     def _pack(value):
-        return pickle.dumps(value)
+        bin_data = pickle.dumps(value)
+        b64_data = codecs.encode(bin_data, 'base64').decode('ascii')
+        return b64_data
 
 
 class DictDatabase(Database):

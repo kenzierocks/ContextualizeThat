@@ -15,6 +15,9 @@ class Message:
         self.text = text
         self.time = time
 
+    def __repr__(self):
+        return f'Message(msg_id={self.msg_id}, user={self.user}, text={self.text}, time={self.time})'
+
 
 class MessageTransport(ABC):
     @abstractmethod
@@ -30,10 +33,13 @@ class MattermostMessageTransport(MessageTransport):
     _PER_PAGE = 60
 
     def __init__(self):
-        self._driver = Driver({
-            'url': config.url,
-            'token': config.token
-        })
+        options = dict(
+            url=config.url['host'],
+            port=config.url['port'],
+            basepath=config.url['basepath']
+        )
+        config.authentication.add_authorization_options(options)
+        self._driver = Driver(options)
         self._driver.login()
 
     def provide_messages(self, channel: str, last_message: Optional[Message]) -> Iterable[Message]:
@@ -44,9 +50,9 @@ class MattermostMessageTransport(MessageTransport):
         while need_more:
             params = dict(page=page_idx, per_page=MattermostMessageTransport._PER_PAGE)
             if last_message is None:
-                # get since a couple seconds ago?
+                # get since an hour ago?
                 # we're basically waiting here...
-                params['since'] = int(time.time() * 1000) - 2000
+                params['since'] = int(time.time() * 1000) - (60 * 60 * 1000)
             else:
                 params['after'] = last_message.msg_id
 
@@ -66,7 +72,7 @@ class MattermostMessageTransport(MessageTransport):
             if 'message' not in post:
                 # I think this is ok, but it's not a message!
                 return None
-            return Message(msg_id, post['user_id'], post['message'], post['create_at'])
+            return Message(msg_id, post['user_id'], post['message'], post['create_at'] / 1000)
 
         return list(filter(None, map(transform_order, post_order)))
 

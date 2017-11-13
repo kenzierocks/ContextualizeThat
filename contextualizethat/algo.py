@@ -58,6 +58,8 @@ class LongThreadAlgo(Algo):
 
     def send_context_message(self, info: ChatOracle) -> bool:
         counts = info.get_message_counts()
+        if not counts:
+            return False
         # compute mean
         mean = sum(counts) / len(counts)
         # compute mean of diffs from mean

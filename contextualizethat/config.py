@@ -3,12 +3,15 @@ from pathlib import Path
 from typing import List
 
 from . import algo as _algo
+from .auth import Auth
 from .consts import NAME
 from .database import Database, DictDatabase
+from .errorpolicy import ErrorPolicy, ExponentialBackOffErrorPolicy
 
 # Defaults for config values
-url = 'example.com'
-token = None
+url = dict(host='example.com', port=8065, basepath='/api/v4')
+authentication: Auth = None
+error_policy: ErrorPolicy = ExponentialBackOffErrorPolicy()
 channels: List[str] = []
 reply_messages: List[str] = [
     '''
