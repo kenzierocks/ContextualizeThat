@@ -17,6 +17,10 @@ def start():
     channels = config.channels
     if not channels:
         raise fail("No channels provided!")
+    if not config.token:
+        raise fail("No token provided!")
+    if config.url == 'example.com':
+        raise fail("There's no Mattermost server at example.com!")
 
     databases = {ch: config.database(ch) for ch in channels}
     oracles: Dict[str, ChatOracle] = {ch: ChatOracle(databases[ch]) for ch in channels}
