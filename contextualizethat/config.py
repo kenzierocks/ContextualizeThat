@@ -35,9 +35,10 @@ def _get_config_path() -> Path:
         xdg_config_dir = Path(xcd_env)
     p = xdg_config_dir / NAME
     p.mkdir(parents=True, exist_ok=True)
-    return p
+    return p / 'config.py'
 
 
-_config = _get_config_path().read_text('utf-8')
-
-exec(_config)
+_cfg_path = _get_config_path()
+if _cfg_path.exists():
+    _config = _cfg_path.read_text('utf-8')
+    exec(_config)
