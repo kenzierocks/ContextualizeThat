@@ -1,7 +1,7 @@
+import time
 from abc import ABC, abstractmethod
 from typing import Iterable, List, Dict, Any, Optional
 
-import time
 from mattermostdriver import Driver
 from mattermostdriver.endpoints.posts import Posts
 

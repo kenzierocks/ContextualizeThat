@@ -39,6 +39,14 @@ class SequenceAlgo(Algo):
         return self.operation(seq.send_context_message(*args, **kwargs) for seq in self.sequence)
 
 
+class HighWordCountAlgo(Algo):
+    """
+    Watches for a small number of users to generate higher than average word counts, then sends out a TRUE.
+    Returns FALSE when things return to normal.
+    """
+    pass
+
+
 class LongThreadAlgo(Algo):
     """
     Watches for long threads of messages, then sends out a TRUE.

@@ -1,8 +1,8 @@
 import os
-from . import algo as _algo
 from pathlib import Path
 from typing import List
 
+from . import algo as _algo
 from .consts import NAME
 from .database import Database, DictDatabase
 
@@ -22,6 +22,7 @@ reply_messages: List[str] = [
     '''
 ]
 algo = _algo.default_algo()
+database_folder = None
 
 
 def database(name: str) -> Database:

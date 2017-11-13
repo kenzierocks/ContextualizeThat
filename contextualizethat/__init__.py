@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from typing import Dict
 
 from . import config
@@ -41,7 +42,7 @@ def start():
                 ch_oracle.feed_messages(messages)
                 if bot_algo.send_context_message(ch_oracle):
                     msg_transport.send_message(channel, random_message())
-
+                time.sleep(10 * 60)
     finally:
         for db in databases.values():
             db.close()
